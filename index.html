@@ -46,6 +46,7 @@ details>div{padding:0 14px 12px}
 label.ck{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;cursor:pointer}
 label.ck input{margin-top:6px;width:18px;height:18px;accent-color:var(--ac)}
 button{font:inherit;font-size:.85rem;color:var(--fg);background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:6px 14px;cursor:pointer}
+.qrrow{display:flex;gap:18px;flex-wrap:wrap;align-items:center}.qrbox{background:#fff;padding:12px;border-radius:12px;width:204px;height:204px;color:#000}.qrbox img,.qrbox canvas{display:block}.qrside{flex:1;min-width:220px}input[type=url]{font:inherit;width:100%;padding:8px 10px;border-radius:10px;border:1px solid var(--bd);background:var(--bg);color:var(--fg)}
 footer{text-align:center;color:var(--mut);font-size:.85rem;padding:10px 14px 30px}
 svg{max-width:100%;height:auto}
 .dg{width:100%;min-width:520px}.dg .t{fill:var(--fg);font:12px system-ui,sans-serif}.dg .h{fill:var(--mut);font:600 11px system-ui,sans-serif}.dg .b{fill:var(--code);stroke:var(--bd);stroke-width:2}.dg path{fill:none;stroke-width:3;stroke-linejoin:round}.dg circle{fill:var(--fg)}
@@ -53,7 +54,7 @@ svg{max-width:100%;height:auto}
 </style>
 </head>
 <body>
-<nav><a href="#tujuan">Tujuan</a><a href="#alat">Alat</a><a href="#hardware">Hardware</a><a href="#wiring">Wiring</a><a href="#software">Software</a><a href="#operasi">Pengoperasian</a><a href="#game">Game</a><a href="#serial">Serial</a><a href="#masalah">Troubleshooting</a><a href="#cek">Checklist</a></nav>
+<nav><a href="#tujuan">Tujuan</a><a href="#alat">Alat</a><a href="#hardware">Hardware</a><a href="#wiring">Wiring</a><a href="#software">Software</a><a href="#operasi">Pengoperasian</a><a href="#game">Game</a><a href="#serial">Serial</a><a href="#masalah">Troubleshooting</a><a href="#cek">Checklist</a><a href="#qr">QR</a></nav>
 
 <header class="hero">
   <div class="oled"><div class="eye"></div><div class="eye"></div></div>
@@ -160,9 +161,14 @@ svg{max-width:100%;height:auto}
 
 <section id="rawat"><h2><i>10</i>Perawatan &amp; Keselamatan</h2>
 <ul><li>Jangan menyambung ke 5V. OLED dan sensor memakai 3V3.</li><li>Lepas USB saat mengubah wiring.</li><li>Simpan kode lama (backup) sebelum mengubah atau menambah fitur.</li><li>Bersihkan layar OLED dengan kain kering lembut.</li><li>Jika perangkat panas atau berbau, cabut daya dan periksa kabel yang korslet.</li></ul></section>
+<section id="qr"><h2><i>QR</i>Bagikan Lewat QR Code</h2>
+<p>Scan dengan kamera HP untuk membuka halaman SOP ini. Ganti isi kolom dengan link lain (misalnya link GitHub Pages) lalu tekan <b>Buat QR</b>.</p>
+<div class="qrrow"><div id="qrimg" class="qrbox"></div>
+<div class="qrside"><input id="qrin" type="url" placeholder="https://..." aria-label="Link untuk dijadikan QR"><p><button id="qrbt">Buat QR</button></p><p style="color:var(--mut);font-size:.85rem">Simpan dengan screenshot atau tekan lama pada gambar QR.</p></div></div></section>
 </main>
 <footer>SOP Robot Mata OLED ESP32-C3 · dibuat untuk dokumentasi project</footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 const items=["Wiring OLED sesuai tabel (SDA GPIO 8, SCL GPIO 9)","Sensor sentuh terpasang di GPIO 4","Daya memakai 3V3, bukan 5V","Arduino IDE dan board ESP32 sudah terpasang","Library Adafruit SSD1306 dan GFX terpasang","Board ESP32C3 Dev Module dan USB CDC On Boot Enabled","Kode diunggah tanpa error","OLED menampilkan mata dan berkedip","Tap 1x mengganti ekspresi","Tap 2x–9x membuka nama, kredit, quote, dan game"];
 const K="sop-oled-chk";let st=[];
@@ -173,6 +179,10 @@ function save(){try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}}
 function upd(){const n=items.filter((_,i)=>st[i]).length;document.getElementById("pg").style.width=(n/items.length*100)+"%";document.getElementById("pt").textContent=n+" dari "+items.length+" selesai"+(n===items.length?" ✓ siap dipakai":"")}
 document.getElementById("rs").onclick=()=>{st=[];save();L.querySelectorAll("input").forEach(c=>c.checked=false);upd()};
 upd();
+let qr=null;
+function mk(){const v=document.getElementById("qrin").value.trim();if(!v)return;try{if(!qr)qr=new QRCode(document.getElementById("qrimg"),{text:v,width:180,height:180,colorDark:"#000000",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M});else{qr.clear();qr.makeCode(v)}}catch(e){document.getElementById("qrimg").textContent="QR gagal dibuat"}}
+document.getElementById("qrin").value="https://claude.ai/artifact/69s3WkterW8TzfmwGG3m2s";
+document.getElementById("qrbt").onclick=mk;mk();
 </script>
 </body>
 </html>
