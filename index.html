@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>SOP Robot Mata OLED ESP32-C3</title>
+<style>
+:root{--bg:#f3f5fa;--fg:#161a26;--mut:#5b6478;--card:#fff;--bd:#d9deea;--ac:#0a8fb8;--ac2:#d6336c;--code:#eef1f8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0e16;--fg:#e8ecf6;--mut:#97a1b8;--card:#141926;--bd:#262d40;--ac:#37d5ff;--ac2:#ff5c9d;--code:#0d1220}}
+:root[data-theme="dark"]{--bg:#0b0e16;--fg:#e8ecf6;--mut:#97a1b8;--card:#141926;--bd:#262d40;--ac:#37d5ff;--ac2:#ff5c9d;--code:#0d1220}
+*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:64px}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;gap:6px;overflow-x:auto;padding:10px 14px;background:var(--bg);border-bottom:1px solid var(--bd)}
+nav a{white-space:nowrap;color:var(--mut);text-decoration:none;font-size:.85rem;padding:5px 11px;border-radius:99px;border:1px solid var(--bd)}
+nav a:hover{color:var(--ac);border-color:var(--ac)}
+.hero{text-align:center;padding:42px 18px 30px;background:radial-gradient(600px 240px at 50% 0,color-mix(in srgb,var(--ac) 22%,transparent),transparent)}
+.oled{width:220px;height:110px;margin:0 auto 22px;background:#000;border:6px solid #2b3144;border-radius:14px;display:flex;justify-content:center;align-items:center;gap:34px;box-shadow:0 10px 40px color-mix(in srgb,var(--ac) 35%,transparent)}
+.eye{width:34px;height:46px;background:#fff;border-radius:11px;animation:blink 4s infinite}
+@keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.08)}}
+h1{margin:0 0 8px;font-size:clamp(1.6rem,5vw,2.4rem);line-height:1.15}
+h1 span{background:linear-gradient(90deg,var(--ac),var(--ac2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{color:var(--mut);max-width:560px;margin:0 auto 16px}
+.tags{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.tags b{font-size:.78rem;font-weight:600;padding:4px 11px;border-radius:99px;background:var(--card);border:1px solid var(--bd)}
+main{max-width:860px;margin:0 auto;padding:6px 14px 50px}
+section{background:var(--card);border:1px solid var(--bd);border-radius:16px;padding:20px 20px 16px;margin:16px 0}
+h2{margin:0 0 12px;font-size:1.2rem;display:flex;align-items:center;gap:10px}
+h2 i{font-style:normal;font-size:.8rem;font-weight:700;color:#fff;background:linear-gradient(135deg,var(--ac),var(--ac2));border-radius:8px;padding:2px 9px}
+p{margin:.4em 0}ul,ol{margin:.4em 0;padding-left:1.3em}li{margin:.25em 0}
+code{background:var(--code);border:1px solid var(--bd);padding:1px 6px;border-radius:6px;font:.86em ui-monospace,Menlo,Consolas,monospace}
+.tw{overflow-x:auto;margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:.92rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--bd);vertical-align:top}
+th{color:var(--mut);font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.box{border:1px solid var(--bd);border-radius:12px;padding:12px 14px;background:var(--bg)}
+.box h3{margin:0 0 4px;font-size:1rem;color:var(--ac)}
+details{border:1px solid var(--bd);border-radius:12px;margin:8px 0;background:var(--bg)}
+summary{cursor:pointer;padding:11px 14px;font-weight:600;list-style:none}
+summary::before{content:"+";display:inline-block;width:1.2em;color:var(--ac2);font-weight:800}
+details[open] summary::before{content:"\2212"}
+details>div{padding:0 14px 12px}
+.warn{border-left:4px solid var(--ac2);background:color-mix(in srgb,var(--ac2) 10%,transparent);padding:10px 14px;border-radius:0 10px 10px 0;margin:12px 0}
+.bar{height:10px;border-radius:99px;background:var(--bd);overflow:hidden;margin:6px 0 12px}
+.bar div{height:100%;width:0;background:linear-gradient(90deg,var(--ac),var(--ac2));transition:width .3s}
+label.ck{display:flex;gap:10px;align-items:flex-start;padding:7px 2px;cursor:pointer}
+label.ck input{margin-top:6px;width:18px;height:18px;accent-color:var(--ac)}
+button{font:inherit;font-size:.85rem;color:var(--fg);background:var(--bg);border:1px solid var(--bd);border-radius:10px;padding:6px 14px;cursor:pointer}
+footer{text-align:center;color:var(--mut);font-size:.85rem;padding:10px 14px 30px}
+svg{max-width:100%;height:auto}
+.dg{width:100%;min-width:520px}.dg .t{fill:var(--fg);font:12px system-ui,sans-serif}.dg .h{fill:var(--mut);font:600 11px system-ui,sans-serif}.dg .b{fill:var(--code);stroke:var(--bd);stroke-width:2}.dg path{fill:none;stroke-width:3;stroke-linejoin:round}.dg circle{fill:var(--fg)}
+.spec{list-style:none;padding:0;margin:6px 0 0;font-size:.9rem}.spec li{padding:3px 0;border-bottom:1px dashed var(--bd)}.spec li:last-child{border:0}.spec b{color:var(--mut);font-weight:600}
+</style>
+</head>
+<body>
+<nav><a href="#tujuan">Tujuan</a><a href="#alat">Alat</a><a href="#hardware">Hardware</a><a href="#wiring">Wiring</a><a href="#software">Software</a><a href="#operasi">Pengoperasian</a><a href="#game">Game</a><a href="#serial">Serial</a><a href="#masalah">Troubleshooting</a><a href="#cek">Checklist</a></nav>
+
+<header class="hero">
+  <div class="oled"><div class="eye"></div><div class="eye"></div></div>
+  <h1><span>SOP Robot Mata OLED</span><br>ESP32-C3 + Sensor Sentuh</h1>
+  <p class="sub">Prosedur standar pembuatan, pengoperasian, dan perawatan project ekspresi mata OLED dengan 13 ekspresi, tampilan nama, dan 5 mini game.</p>
+  <div class="tags"><b>ESP32-C3</b><b>OLED SSD1306 128x64</b><b>TTP223</b><b>13 ekspresi</b><b>5 game</b></div>
+</header>
+
+<main>
+<section id="tujuan"><h2><i>01</i>Tujuan &amp; Ruang Lingkup</h2>
+<p>SOP ini memastikan project dirakit, diunggah, dan dioperasikan dengan cara yang sama setiap kali, sehingga hasilnya konsisten dan mudah diperbaiki bila ada masalah.</p>
+<ul><li><b>Fungsi utama:</b> menampilkan ekspresi mata lucu di OLED yang berganti otomatis atau lewat sentuhan.</li><li><b>Fitur tambahan:</b> tampilan nama, kredit, quote, dan 5 mini game (cacing, menara blok, dino, Tetris, Flappy Bird).</li><li><b>Kendali:</b> satu sensor sentuh dan Serial Monitor.</li></ul></section>
+
+<section id="alat"><h2><i>02</i>Alat &amp; Bahan</h2>
+<div class="grid">
+<div class="box"><h3>Perangkat keras</h3><ul><li>ESP32-C3 (Super Mini)</li><li>OLED I2C 0,96&quot; 128x64 (4 pin)</li><li>Modul sensor sentuh TTP223</li><li>Kabel jumper &amp; kabel USB data</li></ul></div>
+<div class="box"><h3>Perangkat lunak</h3><ul><li>Arduino IDE</li><li>Board package ESP32 (Espressif)</li><li>Library Adafruit SSD1306</li><li>Library Adafruit GFX</li></ul></div>
+</div></section>
+
+<section id="hardware"><h2><i>HW</i>Hardware Detail</h2>
+<p>Spesifikasi tiap komponen yang dipakai di project ini beserta diagram sambungannya.</p>
+<div class="grid">
+<div class="box"><h3>🧠 ESP32-C3 Super Mini</h3><ul class="spec"><li><b>Prosesor:</b> RISC-V 32-bit, hingga 160 MHz</li><li><b>Konektivitas:</b> WiFi 2,4 GHz + Bluetooth LE 5</li><li><b>Memori:</b> flash 4 MB</li><li><b>Port:</b> USB-C (upload &amp; Serial)</li><li><b>Logika:</b> 3,3 V</li><li><b>Peran:</b> otak yang menggambar mata, game, dan membaca sentuhan</li></ul></div>
+<div class="box"><h3>📺 OLED SSD1306</h3><ul class="spec"><li><b>Ukuran:</b> 0,96 inci, monokrom</li><li><b>Resolusi:</b> 128 x 64 piksel</li><li><b>Antarmuka:</b> I2C, 4 pin (VDD, GND, SCK, SDA)</li><li><b>Alamat I2C:</b> 0x3C (kadang 0x3D)</li><li><b>Tegangan:</b> pakai 3V3</li><li><b>Peran:</b> layar ekspresi mata dan game</li></ul></div>
+<div class="box"><h3>👆 Sensor Sentuh TTP223</h3><ul class="spec"><li><b>Jenis:</b> sensor sentuh kapasitif</li><li><b>Pin:</b> VCC, GND, OUT</li><li><b>Tegangan:</b> sekitar 2 – 5,5 V (pakai 3V3)</li><li><b>Keluaran:</b> HIGH saat disentuh (mode bawaan)</li><li><b>Mode:</b> bisa diubah lewat jumper/pad di modul</li><li><b>Peran:</b> satu-satunya tombol kendali</li></ul></div>
+<div class="box"><h3>🔌 Kabel &amp; Pendukung</h3><ul class="spec"><li><b>Kabel jumper:</b> 7 buah (4 OLED + 3 sensor)</li><li><b>Kabel USB-C:</b> harus kabel data, bukan kabel charge saja</li><li><b>Opsional:</b> header solder agar sambungan tidak lepas</li><li><b>Opsional:</b> breadboard untuk uji coba</li></ul></div>
+</div>
+<h3 style="margin:18px 0 6px">Diagram Sambungan</h3>
+<div class="tw"><svg class="dg" viewBox="0 0 640 300" role="img" aria-label="Diagram sambungan ESP32-C3 ke OLED dan sensor sentuh">
+<rect class="b" x="20" y="20" width="150" height="260" rx="12"/><text class="h" x="95" y="44" text-anchor="middle">ESP32-C3</text>
+<rect class="b" x="470" y="20" width="150" height="140" rx="12"/><text class="h" x="545" y="40" text-anchor="middle">OLED SSD1306</text>
+<rect class="b" x="470" y="185" width="150" height="105" rx="12"/><text class="h" x="545" y="203" text-anchor="middle">TTP223</text>
+<path d="M170 60H470" stroke="#e03131"/><path d="M250 60V225H470" stroke="#e03131"/>
+<path d="M170 100H300V90H470" stroke="#868e96"/><path d="M300 100V255H470" stroke="#868e96"/>
+<path d="M170 140H340V120H470" stroke="#228be6"/><path d="M170 180H370V150H470" stroke="#f59f00"/><path d="M170 240H400V275H470" stroke="#2f9e44"/>
+<circle cx="170" cy="60" r="5"/><circle cx="170" cy="100" r="5"/><circle cx="170" cy="140" r="5"/><circle cx="170" cy="180" r="5"/><circle cx="170" cy="240" r="5"/>
+<circle cx="470" cy="60" r="5"/><circle cx="470" cy="90" r="5"/><circle cx="470" cy="120" r="5"/><circle cx="470" cy="150" r="5"/><circle cx="470" cy="225" r="5"/><circle cx="470" cy="255" r="5"/><circle cx="470" cy="275" r="5"/>
+<text class="t" x="30" y="64">3V3</text><text class="t" x="30" y="104">GND</text><text class="t" x="30" y="144">GPIO 8 (SDA)</text><text class="t" x="30" y="184">GPIO 9 (SCL)</text><text class="t" x="30" y="244">GPIO 4 (sentuh)</text>
+<text class="t" x="480" y="64">VDD</text><text class="t" x="480" y="94">GND</text><text class="t" x="480" y="124">SDA</text><text class="t" x="480" y="154">SCK</text>
+<text class="t" x="480" y="229">VCC</text><text class="t" x="480" y="259">GND</text><text class="t" x="480" y="279">OUT</text>
+</svg></div>
+<p style="font-size:.85rem;color:var(--mut)">Warna kabel: merah = 3V3, abu-abu = GND, biru = SDA, kuning = SCL, hijau = sinyal sensor sentuh.</p>
+</section>
+
+<section id="wiring"><h2><i>03</i>Wiring (Pemasangan Kabel)</h2>
+<div class="tw"><table><tr><th>Modul</th><th>Pin modul</th><th>Pin ESP32-C3</th></tr>
+<tr><td rowspan="4">OLED</td><td>VDD</td><td>3V3</td></tr><tr><td>GND</td><td>GND</td></tr><tr><td>SDA</td><td>GPIO 8</td></tr><tr><td>SCK (SCL)</td><td>GPIO 9</td></tr>
+<tr><td rowspan="3">TTP223</td><td>VCC</td><td>3V3</td></tr><tr><td>GND</td><td>GND</td></tr><tr><td>OUT (I/O)</td><td>GPIO 4</td></tr></table></div>
+<div class="warn"><b>Penting:</b> pakai tegangan <b>3V3</b>, bukan 5V. Pastikan kabel dilepas dari USB sebelum mengubah wiring.</div></section>
+
+<section id="software"><h2><i>04</i>Persiapan &amp; Upload Kode</h2>
+<ol>
+<li>Pasang Arduino IDE dan board package <b>esp32</b>.</li>
+<li>Install library <code>Adafruit SSD1306</code> dan <code>Adafruit GFX</code> lewat Library Manager.</li>
+<li>Pilih <b>Tools → Board → ESP32C3 Dev Module</b>.</li>
+<li>Aktifkan <b>Tools → USB CDC On Boot → Enabled</b>.</li>
+<li>Pilih port yang benar, lalu klik <b>Upload</b>.</li>
+<li>Buka Serial Monitor di <code>115200</code> baud untuk memastikan program berjalan.</li></ol>
+<div class="warn"><b>Catatan kode:</b> jangan memakai nama variabel <code>RX</code> atau <code>LX</code> untuk posisi mata. Di ESP32-C3, <code>RX</code> sudah dipakai board. Gunakan <code>EYE_L</code> dan <code>EYE_R</code>.</div></section>
+
+<section id="operasi"><h2><i>05</i>Pengoperasian Sensor Sentuh</h2>
+<div class="tw"><table><tr><th>Gerakan</th><th>Hasil</th></tr>
+<tr><td>Tap 1x</td><td>Ekspresi berikutnya (mode manual)</td></tr>
+<tr><td>Tap 2x</td><td>Menampilkan nama (5 detik)</td></tr>
+<tr><td>Tap 3x</td><td>Menampilkan kredit (6 detik)</td></tr>
+<tr><td>Tap 4x</td><td>Menampilkan quote (6 detik)</td></tr>
+<tr><td>Tap 5x</td><td>Game cacing</td></tr>
+<tr><td>Tap 6x</td><td>Game menara blok</td></tr>
+<tr><td>Tap 7x</td><td>Game dino</td></tr>
+<tr><td>Tap 8x</td><td>Game Tetris</td></tr>
+<tr><td>Tap 9x</td><td>Game Flappy Bird</td></tr>
+<tr><td>Tahan 1 detik</td><td>Mode otomatis ON/OFF (atau menutup tampilan nama/kredit/quote)</td></tr></table></div>
+<p>Antar tap maksimal <b>0,35 detik</b>. Sistem menunggu jeda itu sebelum mengeksekusi, jadi tap 1x terasa sedikit tertunda.</p>
+<p><b>13 ekspresi:</b> normal, senang, marah, sedih, ngantuk, jatuh cinta, kaget, kedip sebelah, pusing, curiga, mata bintang, menangis, geli.</p></section>
+
+<section id="game"><h2><i>06</i>Panduan Mini Game</h2>
+<details><summary>Cacing (tap 5x)</summary><div><ul><li>Tap = belok kanan, tahan ±0,4 detik = belok kiri.</li><li>Makan kotak berkedip agar makin panjang dan cepat.</li><li>Kena badan sendiri = game over. Tembok bisa ditembus.</li></ul></div></details>
+<details><summary>Menara blok (tap 6x)</summary><div><ul><li>Tap = jatuhkan blok yang bergeser.</li><li>Bagian yang menjorok terpotong. Selisih 2 piksel atau kurang = PERFECT.</li><li>Meleset total = game over.</li></ul></div></details>
+<details><summary>Dino (tap 7x)</summary><div><ul><li>Tap = loncat melewati kaktus (hanya saat di tanah).</li><li>Makin jauh berlari, makin cepat.</li></ul></div></details>
+<details><summary>Tetris (tap 8x)</summary><div><ul><li>Tap = putar. Tahan = geser (bolak-balik otomatis). Tap 2x cepat = jatuhkan langsung.</li><li>Titik kecil menunjukkan bayangan tempat mendarat. Tiap 10 baris naik level.</li><li>Saat bermain, tahan 3 detik untuk keluar.</li></ul></div></details>
+<details><summary>Flappy Bird (tap 9x)</summary><div><ul><li>Tap = burung loncat. Hindari pipa.</li><li>Skor naik tiap melewati pipa.</li></ul></div></details>
+<div class="warn"><b>Aturan umum:</b> saat game over, <b>tap</b> = main lagi dan <b>tahan 1,5 detik</b> = keluar ke mata. Skor terbaik hilang saat ESP32 di-restart.</div></section>
+
+<section id="serial"><h2><i>07</i>Perintah Serial Monitor</h2>
+<div class="tw"><table><tr><th>Ketik</th><th>Fungsi</th></tr>
+<tr><td><code>0</code> – <code>12</code></td><td>Pilih ekspresi tertentu</td></tr>
+<tr><td><code>a</code></td><td>Mode otomatis</td></tr>
+<tr><td><code>n</code> / <code>c</code> / <code>q</code></td><td>Nama / kredit / quote</td></tr>
+<tr><td><code>g</code> / <code>b</code> / <code>d</code> / <code>t</code> / <code>f</code></td><td>Cacing / blok / dino / Tetris / Flappy</td></tr></table></div></section>
+
+<section id="masalah"><h2><i>08</i>Troubleshooting</h2>
+<details><summary>Layar OLED kosong</summary><div><ul><li>Cek kabel SDA (GPIO 8) dan SCL (GPIO 9) tidak tertukar.</li><li>Ganti <code>OLED_ADDR</code> dari <code>0x3C</code> ke <code>0x3D</code>.</li><li>Pastikan daya 3V3 dan GND terpasang.</li></ul></div></details>
+<details><summary>Error “conflicting declaration RX”</summary><div>Ganti semua <code>RX</code> menjadi <code>EYE_R</code> dan <code>LX</code> menjadi <code>EYE_L</code> (Ctrl + H, centang Match case).</div></details>
+<details><summary>Serial Monitor kosong</summary><div>Aktifkan <b>USB CDC On Boot</b>, set baud <code>115200</code>, lalu tekan reset.</div></details>
+<details><summary>Sensor sentuh tidak merespons / terbalik</summary><div><ul><li>Cek OUT ke GPIO 4 dan daya 3V3.</li><li>Jika logikanya terbalik, ubah <code>== HIGH</code> menjadi <code>== LOW</code> pada pembacaan <code>TOUCH_PIN</code>.</li></ul></div></details>
+<details><summary>Tap berkali-kali sulit terbaca</summary><div>Perbesar <code>DOUBLE_MS</code> (misalnya 350 → 450) agar jeda antar tap lebih longgar.</div></details>
+<details><summary>Upload gagal</summary><div>Pakai kabel USB data (bukan kabel charge saja). Tahan tombol BOOT, tekan RESET, lepas BOOT, lalu upload ulang.</div></details>
+<details><summary>Flappy Bird: celah pipa selalu sama / burung langsung jatuh</summary><div>Ganti rentang acak menjadi <code>random(8, F_GROUND - 8 - F_PIPE_GAP + 1)</code>, tambahkan status “melayang” sampai tap pertama, dan kurangi <code>F_JUMP</code> ke sekitar <code>-180</code>.</div></details></section>
+
+<section id="cek"><h2><i>09</i>Checklist Sebelum Dipakai</h2>
+<div class="bar"><div id="pg"></div></div>
+<div id="list"></div>
+<p><button id="rs">Reset checklist</button> <span id="pt" style="color:var(--mut);font-size:.85rem"></span></p></section>
+
+<section id="rawat"><h2><i>10</i>Perawatan &amp; Keselamatan</h2>
+<ul><li>Jangan menyambung ke 5V. OLED dan sensor memakai 3V3.</li><li>Lepas USB saat mengubah wiring.</li><li>Simpan kode lama (backup) sebelum mengubah atau menambah fitur.</li><li>Bersihkan layar OLED dengan kain kering lembut.</li><li>Jika perangkat panas atau berbau, cabut daya dan periksa kabel yang korslet.</li></ul></section>
+</main>
+<footer>SOP Robot Mata OLED ESP32-C3 · dibuat untuk dokumentasi project</footer>
+
+<script>
+const items=["Wiring OLED sesuai tabel (SDA GPIO 8, SCL GPIO 9)","Sensor sentuh terpasang di GPIO 4","Daya memakai 3V3, bukan 5V","Arduino IDE dan board ESP32 sudah terpasang","Library Adafruit SSD1306 dan GFX terpasang","Board ESP32C3 Dev Module dan USB CDC On Boot Enabled","Kode diunggah tanpa error","OLED menampilkan mata dan berkedip","Tap 1x mengganti ekspresi","Tap 2x–9x membuka nama, kredit, quote, dan game"];
+const K="sop-oled-chk";let st=[];
+try{st=JSON.parse(localStorage.getItem(K)||"[]")}catch(e){st=[]}
+const L=document.getElementById("list");
+items.forEach((t,i)=>{const l=document.createElement("label");l.className="ck";const c=document.createElement("input");c.type="checkbox";c.checked=!!st[i];c.onchange=()=>{st[i]=c.checked;save();upd()};l.append(c,document.createTextNode(t));L.append(l)});
+function save(){try{localStorage.setItem(K,JSON.stringify(st))}catch(e){}}
+function upd(){const n=items.filter((_,i)=>st[i]).length;document.getElementById("pg").style.width=(n/items.length*100)+"%";document.getElementById("pt").textContent=n+" dari "+items.length+" selesai"+(n===items.length?" ✓ siap dipakai":"")}
+document.getElementById("rs").onclick=()=>{st=[];save();L.querySelectorAll("input").forEach(c=>c.checked=false);upd()};
+upd();
+</script>
+</body>
+</html>
